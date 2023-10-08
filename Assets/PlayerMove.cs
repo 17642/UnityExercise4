@@ -8,6 +8,7 @@ public class PlayerMove : MonoBehaviour
     Rigidbody2D rigid;
     Animator anim;
     public GameManager manager;
+    
 
     Vector3 direVec;
 
