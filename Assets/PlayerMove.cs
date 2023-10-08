@@ -7,6 +7,7 @@ public class PlayerMove : MonoBehaviour
     float h, v;
     Rigidbody2D rigid;
     Animator anim;
+    public GameManager manager;
 
     Vector3 direVec;
 
@@ -19,21 +20,22 @@ public class PlayerMove : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        scanObj = GetComponent<GameObject>();
+        //scanObj = GetComponent<GameObject>();
+        //manager= gameObject.GetComponent<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
         //Move Value
-        h = Input.GetAxisRaw("Horizontal");
-        v = Input.GetAxisRaw("Vertical");
+        h = manager.isAction ? 0 : Input.GetAxisRaw("Horizontal");
+        v = manager.isAction ? 0 : Input.GetAxisRaw("Vertical");
 
-        //Check Button Down/Up
-        bool hDown = Input.GetButtonDown("Horizontal");
-        bool vDown = Input.GetButtonDown("Vertical");
-        bool hUp = Input.GetButtonUp("Horizontal");
-        bool vUp = Input.GetButtonUp("Vertical");
+        //Check Button Down/Up -> isAction이 true일 경우(대화창이 켜져 있을 경우 움직임을 제한)
+        bool hDown = manager.isAction ? false : Input.GetButtonDown("Horizontal");
+        bool vDown = manager.isAction ? false : Input.GetButtonDown("Vertical");
+        bool hUp = manager.isAction ? false : Input.GetButtonUp("Horizontal");
+        bool vUp = manager.isAction ? false : Input.GetButtonUp("Vertical");
 
 
 
@@ -76,7 +78,8 @@ public class PlayerMove : MonoBehaviour
         //scnaobject
         if (Input.GetButtonDown("Jump")&&scanObj!=null)//스페이스바를 누르면&&scanObj에 무언가가 있으면
         {
-            Debug.Log("this is "+scanObj.name);
+            //Debug.Log("this is "+scanObj.name);
+            manager.Action(scanObj);//텍스트 창에 표시
         }
             
     }
