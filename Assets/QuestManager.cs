@@ -20,7 +20,7 @@ public class QuestManager : MonoBehaviour
 
     void GenerateData()
     {
-        questList.Add(10, new QuestData("마을 사람들과 노가리", new int[] {1000,2000 }));
+        questList.Add(10, new QuestData("마을 사람들과 이야기", new int[] {1000,2000 }));
         questList.Add(20, new QuestData("루도의 동전 찾아주기", new int[] {5000,2000 }));//동전 접근 후 NPC 1 접근
         questList.Add(30, new QuestData("퀘스트 모두 해결", new int[] { 0 }));
     }

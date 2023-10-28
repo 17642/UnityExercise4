@@ -17,6 +17,9 @@ public class GameManager : MonoBehaviour
     public QuestManager Qmanager;
     public Animator talkPanel;
     public Sprite prevPortrait;
+    public GameObject MenuSet;
+    public Text questTalk;
+    public GameObject Player;
     // Start is called before the first frame update
 
     public void Action(GameObject scanObj)
@@ -40,7 +43,20 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        Debug.Log(Qmanager.CheckQuest());
+        GameLoad();
+        questTalk.text=Qmanager.CheckQuest();
+    }
+
+    private void Update()
+    {
+        //서브메뉴
+        if (Input.GetButtonDown("Cancel"))
+        {
+            if (MenuSet.activeSelf)//메뉴창이 켜져 있을 떄
+                MenuSet.SetActive(false);
+            else
+                MenuSet.SetActive(true);
+        }
     }
 
     void Talk(int id, bool isNpc)
@@ -65,7 +81,7 @@ public class GameManager : MonoBehaviour
             talkIndex = 0;//talkIndex를 초기화하고
             isAction = false;//창을 끄고
             Qmanager.CheckQuest(id);
-            //Debug.Log(Qmanager.CheckQuest(id));//퀘스트 이름 출력
+            questTalk.text=Qmanager.CheckQuest(id);//퀘스트 이름 출력
             return;//함수 진행 끝
         }
         if (isNpc)//NPC일 때
@@ -87,5 +103,37 @@ public class GameManager : MonoBehaviour
         }
         isAction = true;//창을 켜고
         talkIndex++;//talkIndex를 증가
+    }
+
+    public void GameSave()
+    {
+        PlayerPrefs.SetFloat("PlayerX",Player.transform.position.x);
+        PlayerPrefs.SetFloat("PlayerY", Player.transform.position.y);
+        PlayerPrefs.SetInt("QuestID", Qmanager.questId);
+        PlayerPrefs.SetInt("QuestActionIndex", Qmanager.questTalkIndex);
+        //player.x;
+        //player.y
+        //quest id
+        //Quest Action Index
+        PlayerPrefs.Save();
+        MenuSet.SetActive(false);
+    }
+
+    public void GameLoad() {
+        if (!PlayerPrefs.HasKey("PlayerX"))//최소 시작시 저장 데이터가 없으므로
+            return; //예외 설정
+
+        float x=PlayerPrefs.GetFloat("PlayerX");
+        float y = PlayerPrefs.GetFloat("PlayerY");
+        int questid = PlayerPrefs.GetInt("QuestID");
+        int questActionIndex = PlayerPrefs.GetInt("QuestActionIndex");
+
+        Player.transform.position=new Vector3(x,y,0);
+        Qmanager.questId=questid;
+        Qmanager.questTalkIndex=questActionIndex;
+    }
+    public void GameExit()
+    {
+        Application.Quit();//게임 종료(에디터에서는 작동 X)
     }
 }
