@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public TalkManager Tmanager;
     public int talkIndex=0;
     public Image portraitImage;
+    public QuestManager Qmanager;
     // Start is called before the first frame update
 
     public void Action(GameObject scanObj)
@@ -33,15 +34,23 @@ public class GameManager : MonoBehaviour
 
         talkPanel.SetActive(isAction);
     }
+    private void Start()
+    {
+        Debug.Log(Qmanager.CheckQuest());
+    }
 
     void Talk(int id, bool isNpc)
     {
-        string talk = Tmanager.GetTalk(id, talkIndex);
-
+        //Talk Data 설정
+        int questTalkIndex = Qmanager.GetQuestTalkIndex(id);//NPC ID를 받아 해당하는 퀘스트 번호 지정
+        string talk = Tmanager.GetTalk(id+questTalkIndex, talkIndex);//대화 데이터 ID를 퀘스트 번호+NPC ID로 지정
+        //대화 끝내기
         if (talk == null)//더이상 대화의 내용이 없으면
         {
             talkIndex = 0;//talkIndex를 초기화하고
             isAction = false;//창을 끄고
+            Qmanager.CheckQuest(id);
+            //Debug.Log(Qmanager.CheckQuest(id));//퀘스트 이름 출력
             return;//함수 진행 끝
         }
         if (isNpc)//NPC일 때
