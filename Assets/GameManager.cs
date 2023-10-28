@@ -6,14 +6,17 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject talkPanel;
-    public Text talkMassage;
+    //public GameObject talkPanel;
+    public TypingEffector talkMassage;
     public GameObject scanObject;
     public bool isAction=false;
     public TalkManager Tmanager;
     public int talkIndex=0;
     public Image portraitImage;
+    public Animator portraitAnim;
     public QuestManager Qmanager;
+    public Animator talkPanel;
+    public Sprite prevPortrait;
     // Start is called before the first frame update
 
     public void Action(GameObject scanObj)
@@ -27,12 +30,13 @@ public class GameManager : MonoBehaviour
         //    isAction = true;//isAction 키워드로 talkPanel이 활성화되었다고 표시함
             scanObject = scanObj;
             ObjData objdata= scanObj.GetComponent<ObjData>();
-
+            
             //talkMassage.text = "이것의 이름은 " + scanObject.name + " 입니다.";
             Talk(objdata.id, objdata.isNpc);
+            
         //}
 
-        talkPanel.SetActive(isAction);
+        talkPanel.SetBool("isShow",isAction);//isShow 설정.
     }
     private void Start()
     {
@@ -41,9 +45,20 @@ public class GameManager : MonoBehaviour
 
     void Talk(int id, bool isNpc)
     {
+        int questTalkIndex = 0;
+        string talk = "";
         //Talk Data 설정
-        int questTalkIndex = Qmanager.GetQuestTalkIndex(id);//NPC ID를 받아 해당하는 퀘스트 번호 지정
-        string talk = Tmanager.GetTalk(id+questTalkIndex, talkIndex);//대화 데이터 ID를 퀘스트 번호+NPC ID로 지정
+        if (talkMassage.isAnim)
+        {
+            talkMassage.SetMsg("");
+            return;
+        }
+        else
+        {
+            questTalkIndex = Qmanager.GetQuestTalkIndex(id);//NPC ID를 받아 해당하는 퀘스트 번호 지정
+            talk = Tmanager.GetTalk(id + questTalkIndex, talkIndex);//대화 데이터 ID를 퀘스트 번호+NPC ID로 지정
+        }
+        
         //대화 끝내기
         if (talk == null)//더이상 대화의 내용이 없으면
         {
@@ -55,13 +70,19 @@ public class GameManager : MonoBehaviour
         }
         if (isNpc)//NPC일 때
         {
-            talkMassage.text=talk.Split('/')[0];// /를 구분자로 사용해 문자열을 분리(배열을 반환함)
+            talkMassage.SetMsg(talk.Split('/')[0]);// /를 구분자로 사용해 문자열을 분리(배열을 반환함)
             portraitImage.sprite = Tmanager.GetPortrait(id, int.Parse(talk.Split('/')[1]));// 분리한 문자열을 int로 파싱.
             portraitImage.color = new Color(1, 1, 1, 1);//알파값을 1로 해 초상화를 보여준다
+            //Animation Portrait
+            if (prevPortrait != portraitImage.sprite)
+            {//이전 스프라이트와 지금 스프라이트가 다르면
+                portraitAnim.SetTrigger("doEffect");//doEffect 트리거 작동
+                prevPortrait = portraitImage.sprite;
+            }
         }
         else//NPC가 아닐 떄
         {
-            talkMassage.text = talk;
+            talkMassage.SetMsg(talk);
             portraitImage.color=new Color(1, 1, 1, 0);//알파값을 0으로 해 초상화를 투명하게 한다.
         }
         isAction = true;//창을 켜고
