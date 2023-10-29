@@ -17,6 +17,11 @@ public class PlayerMove : MonoBehaviour
     bool isHorizonMove;
 
     GameObject scanObj;
+
+    //Mobile KEy Var
+    int up_value,down_value,left_value,right_value;
+    bool up_Down,down_Down,left_Down,right_Down;
+    bool up_Up,down_Up,left_Up,right_Up;
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -29,14 +34,16 @@ public class PlayerMove : MonoBehaviour
     void Update()
     {
         //Move Value
-        h = manager.isAction ? 0 : Input.GetAxisRaw("Horizontal");
-        v = manager.isAction ? 0 : Input.GetAxisRaw("Vertical");
+        //PC+Mobile
+        h = manager.isAction ? 0 : Input.GetAxisRaw("Horizontal")+right_value + left_value;
+        v = manager.isAction ? 0 : Input.GetAxisRaw("Vertical")+ down_value + up_value;
+
 
         //Check Button Down/Up -> isAction이 true일 경우(대화창이 켜져 있을 경우 움직임을 제한)
-        bool hDown = manager.isAction ? false : Input.GetButtonDown("Horizontal");
-        bool vDown = manager.isAction ? false : Input.GetButtonDown("Vertical");
-        bool hUp = manager.isAction ? false : Input.GetButtonUp("Horizontal");
-        bool vUp = manager.isAction ? false : Input.GetButtonUp("Vertical");
+        bool hDown = manager.isAction ? false : Input.GetButtonDown("Horizontal")|| right_Down || left_Down;
+        bool vDown = manager.isAction ? false : Input.GetButtonDown("Vertical")|| up_Down || down_Down;
+        bool hUp = manager.isAction ? false : Input.GetButtonUp("Horizontal") || right_Up || left_Up;
+        bool vUp = manager.isAction ? false : Input.GetButtonUp("Vertical") || up_Up || down_Up;
 
 
 
@@ -82,6 +89,16 @@ public class PlayerMove : MonoBehaviour
             //Debug.Log("this is "+scanObj.name);
             manager.Action(scanObj);//텍스트 창에 표시
         }
+
+        //mobile var init
+        left_Down = false;
+        right_Down = false;
+        up_Down = false;
+        down_Down = false;
+        left_Up=false; 
+        right_Up=false;
+        up_Up=false;
+        down_Up=false;
             
     }
 
@@ -104,5 +121,63 @@ public class PlayerMove : MonoBehaviour
         }else
             scanObj = null;//닿은게 없으면 scanObj는 NULL
 
+    }
+
+    public void ButtonDown(string type)
+    {
+        switch (type)
+        {
+            case "U":
+                up_value = 1;
+                up_Down = true;
+                break;
+            case "D":
+                down_value = 1;
+                down_Down = true;
+                break;
+            case "L":
+                left_value = 1;
+                left_Down = true;
+                break;
+            case "R":
+                right_value = 1;
+                right_Down = true;
+                break;
+            case "A":
+                if (scanObj != null)//scanObj에 무언가가 있으면
+                {
+                    //Debug.Log("this is "+scanObj.name);
+                    manager.Action(scanObj);//텍스트 창에 표시
+                }
+                break;
+            case "C":
+                manager.SubMenuActive();
+                break;
+
+        }
+    }
+
+    public void ButtonUp(string type)
+    {
+        switch (type)
+        {
+            case "U":
+                up_value = 0;
+                up_Up = true;
+                break;
+            case "D":
+                down_value = 0;
+                down_Down = true;
+                break;
+            case "L":
+                left_value = 0;
+                left_Down = true;
+                break;
+            case "R":
+                right_value = 0;
+                right_Down = true;
+                break;
+
+        }
     }
 }

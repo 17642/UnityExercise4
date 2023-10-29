@@ -49,7 +49,11 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        //서브메뉴
+        SubMenuActive();
+    }
+
+    public void SubMenuActive()
+    {
         if (Input.GetButtonDown("Cancel"))
         {
             if (MenuSet.activeSelf)//메뉴창이 켜져 있을 떄
